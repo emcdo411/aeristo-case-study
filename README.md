@@ -7,7 +7,7 @@
 ![tidyr](https://img.shields.io/badge/-tidyr-e377c2)
 ![shiny](https://img.shields.io/badge/-shiny-17becf)
 ![bs4Dash](https://img.shields.io/badge/-bs4Dash-purple)
-![shinyWidgets](https://img.shields.io/badge/-shinyWidgets-green)
+![shinyWidgets](https://img.shields.io/badge/-shinywidgets-green)
 ![AspenPlus](https://img.shields.io/badge/-Aspen%20Plus-lightgrey)
 ![MATLAB](https://img.shields.io/badge/-MATLAB-orange)
 ![LabVIEW](https://img.shields.io/badge/-LabVIEW-yellow)
@@ -125,21 +125,141 @@ plot_ly(abrasion_data, x = ~Cycles) %>%
 
 ## 🧠 R Shiny App: Leather Process Optimization Dashboard
 
-```r
-# Full Shiny App (app.R)
 library(shiny)
 library(bs4Dash)
 library(plotly)
-library(ggplot2)
 library(dplyr)
-library(tidyr)
+library(shinyWidgets)
 
-ui <- bs4DashPage(...)
-server <- function(input, output) { ... }
+# Custom CSS for Power BI-inspired styling
+custom_css <- "
+body { font-family: 'Roboto', sans-serif; background-color: #1A1A1A; color: #D3D3D3; }
+.main-header .navbar { background-color: #1A1A1A; border-bottom: 2px solid #8B5E3C; }
+.main-sidebar { background-color: #2B2B2B; }
+.box { background-color: #2B2B2B; border: 1px solid #8B5E3C; border-radius: 8px; }
+.btn-primary { background-color: #8B5E3C; border-color: #8B5E3C; }
+.btn-primary:hover { background-color: #A0522D; border-color: #A0522D; }
+"
+
+# UI
+ui <- bs4DashPage(
+  dark = TRUE,
+  header = bs4DashNavbar(title = "Leather Process Optimization", status = "dark"),
+  sidebar = bs4DashSidebar(
+    skin = "dark",
+    sidebarMenu(
+      menuItem("Tanning Efficiency", tabName = "tanning", icon = icon("flask")),
+      menuItem("Smart Leather", tabName = "smart", icon = icon("thermometer-half")),
+      menuItem("Coating Durability", tabName = "coating", icon = icon("shield-alt"))
+    )
+  ),
+  body = bs4DashBody(
+    tags$head(tags$style(HTML(custom_css))),
+    tabItems(
+      tabItem(
+        tabName = "tanning",
+        fluidRow(
+          box(
+            title = "Water Usage by Tanning Method",
+            width = 12,
+            plotlyOutput("tanning_plot")
+          )
+        )
+      ),
+      tabItem(
+        tabName = "smart",
+        fluidRow(
+          box(
+            title = "Temperature Regulation Performance",
+            width = 12,
+            plotlyOutput("smart_plot")
+          )
+        )
+      ),
+      tabItem(
+        tabName = "coating",
+        fluidRow(
+          box(
+            title = "Abrasion Resistance of Coatings",
+            width = 12,
+            plotlyOutput("coating_plot")
+          )
+        )
+      )
+    )
+  )
+)
+
+# Server
+server <- function(input, output) {
+  # Tanning data
+  tanning_data <- reactive({
+    data.frame(
+      Method = rep(c("Chromium", "Bio-Based"), each = 10),
+      Water_Usage_Liters = c(runif(10, 500, 700), runif(10, 200, 400))
+    )
+  })
+  
+  output$tanning_plot <- renderPlotly({
+    plot_ly(tanning_data(), x = ~Method, y = ~Water_Usage_Liters, type = "box",
+            color = ~Method, colors = c("Chromium" = "#1E90FF", "Bio-Based" = "#32CD32")) %>%
+      layout(
+        title = "Water Usage in Tanning Processes",
+        xaxis = list(title = "Tanning Method"),
+        yaxis = list(title = "Water Usage (Liters)"),
+        paper_bgcolor = "#1A1A1A",
+        plot_bgcolor = "#1A1A1A",
+        font = list(color = "#D3D3D3")
+      )
+  })
+  
+  # Smart leather data
+  smart_data <- reactive({
+    data.frame(
+      Time_Min = seq(0, 60, by = 5),
+      Temp_Traditional = 25 + 10 * sin(seq(0, 3.14, length.out = 13)),
+      Temp_Smart = 25 + 2 * sin(seq(0, 3.14, length.out = 13))
+    )
+  })
+  
+  output$smart_plot <- renderPlotly({
+    plot_ly(smart_data(), x = ~Time_Min) %>%
+      add_lines(y = ~Temp_Traditional, name = "Traditional Leather", line = list(color = "#FF4500")) %>%
+      add_lines(y = ~Temp_Smart, name = "Smart Leather", line = list(color = "#1E90FF")) %>%
+      layout(
+        title = "Temperature Regulation in Leather Seats",
+        xaxis = list(title = "Time (Minutes)"),
+        yaxis = list(title = "Temperature (°C)"),
+        paper_bgcolor = "#1A1A1A",
+        plot_bgcolor = "#1A1A1A",
+        font = list(color = "#D3D3D3")
+      )
+  })
+  
+  # Coating data
+  coating_data <- reactive({
+    data.frame(
+      Coating = rep(c("Uncoated", "Nano-Coated"), each = 10),
+      Cycles = c(runif(10, 1000, 3000), runif(10, 5000, 8000))
+    )
+  })
+  
+  output$coating_plot <- renderPlotly({
+    plot_ly(coating_data(), x = ~Coating, y = ~Cycles, type = "box",
+            color = ~Coating, colors = c("Uncoated" = "#FF6347", "Nano-Coated" = "#4682B4")) %>%
+      layout(
+        title = "Abrasion Resistance of Leather Coatings",
+        xaxis = list(title = "Coating Type"),
+        yaxis = list(title = "Cycles to Failure"),
+        paper_bgcolor = "#1A1A1A",
+        plot_bgcolor = "#1A1A1A",
+        font = list(color = "#D3D3D3")
+      )
+  })
+}
+
+# Run app
 shinyApp(ui, server)
-```
-
----
 
 ## 📦 Repository Usage
 
