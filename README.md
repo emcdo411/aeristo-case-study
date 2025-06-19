@@ -7,7 +7,7 @@
 ![tidyr](https://img.shields.io/badge/-tidyr-e377c2)
 ![shiny](https://img.shields.io/badge/-shiny-17becf)
 ![bs4Dash](https://img.shields.io/badge/-bs4Dash-purple)
-![shinyWidgets](https://img.shields.io/badge/-shinywidgets-green)
+![shinyWidgets](https://img.shields.io/badge/-shinyWidgets-green)
 ![AspenPlus](https://img.shields.io/badge/-Aspen%20Plus-lightgrey)
 ![MATLAB](https://img.shields.io/badge/-MATLAB-orange)
 ![LabVIEW](https://img.shields.io/badge/-LabVIEW-yellow)
@@ -125,13 +125,15 @@ plot_ly(abrasion_data, x = ~Cycles) %>%
 
 ## 🧠 R Shiny App: Leather Process Optimization Dashboard
 
+```r
+# Full Shiny App (app.R)
 library(shiny)
 library(bs4Dash)
 library(plotly)
+library(ggplot2)
 library(dplyr)
-library(shinyWidgets)
+library(tidyr)
 
-# Custom CSS for Power BI-inspired styling
 custom_css <- "
 body { font-family: 'Roboto', sans-serif; background-color: #1A1A1A; color: #D3D3D3; }
 .main-header .navbar { background-color: #1A1A1A; border-bottom: 2px solid #8B5E3C; }
@@ -141,7 +143,6 @@ body { font-family: 'Roboto', sans-serif; background-color: #1A1A1A; color: #D3D
 .btn-primary:hover { background-color: #A0522D; border-color: #A0522D; }
 "
 
-# UI
 ui <- bs4DashPage(
   dark = TRUE,
   header = bs4DashNavbar(title = "Leather Process Optimization", status = "dark"),
@@ -190,16 +191,14 @@ ui <- bs4DashPage(
   )
 )
 
-# Server
 server <- function(input, output) {
-  # Tanning data
   tanning_data <- reactive({
     data.frame(
       Method = rep(c("Chromium", "Bio-Based"), each = 10),
       Water_Usage_Liters = c(runif(10, 500, 700), runif(10, 200, 400))
     )
   })
-  
+
   output$tanning_plot <- renderPlotly({
     plot_ly(tanning_data(), x = ~Method, y = ~Water_Usage_Liters, type = "box",
             color = ~Method, colors = c("Chromium" = "#1E90FF", "Bio-Based" = "#32CD32")) %>%
@@ -212,8 +211,7 @@ server <- function(input, output) {
         font = list(color = "#D3D3D3")
       )
   })
-  
-  # Smart leather data
+
   smart_data <- reactive({
     data.frame(
       Time_Min = seq(0, 60, by = 5),
@@ -221,7 +219,7 @@ server <- function(input, output) {
       Temp_Smart = 25 + 2 * sin(seq(0, 3.14, length.out = 13))
     )
   })
-  
+
   output$smart_plot <- renderPlotly({
     plot_ly(smart_data(), x = ~Time_Min) %>%
       add_lines(y = ~Temp_Traditional, name = "Traditional Leather", line = list(color = "#FF4500")) %>%
@@ -235,15 +233,14 @@ server <- function(input, output) {
         font = list(color = "#D3D3D3")
       )
   })
-  
-  # Coating data
+
   coating_data <- reactive({
     data.frame(
       Coating = rep(c("Uncoated", "Nano-Coated"), each = 10),
       Cycles = c(runif(10, 1000, 3000), runif(10, 5000, 8000))
     )
   })
-  
+
   output$coating_plot <- renderPlotly({
     plot_ly(coating_data(), x = ~Coating, y = ~Cycles, type = "box",
             color = ~Coating, colors = c("Uncoated" = "#FF6347", "Nano-Coated" = "#4682B4")) %>%
@@ -258,8 +255,10 @@ server <- function(input, output) {
   })
 }
 
-# Run app
 shinyApp(ui, server)
+```
+
+---
 
 ## 📦 Repository Usage
 
@@ -275,7 +274,7 @@ install.packages(c("shiny", "bs4Dash", "plotly", "ggplot2", "dplyr", "tidyr"))
 
 Maurice McDonald
 📊 Data Viz Storyteller | 🇺🇸 US Army Veteran
-🔗 [LinkedIn](https://www.linkedin.com/in/mauricemcdonald) | [GitHub](https://github.com/emcdo411)
-📅 June 18, 2025
+🔗 [LinkedIn](https://www.linkedin.com/in/mauricemcdonald) | [GitHub](https://www.github.com/emcdo411)
+🗓 June 18, 2025
 
 
